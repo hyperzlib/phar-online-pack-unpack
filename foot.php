@@ -5,10 +5,10 @@
 <!-- UY END -->
 </div>
 <footer id="zan-footer">
-<section class="footer-space">
-    <div class="footer-space-line"></div>
-</section>
-	<section class="zan-copyright">
+	<section class="footer-space">
+		<div class="footer-space-line"></div>
+	</section>
+	<section class="container">
 		<div id="footer"><p>Copyright &copy; 2015-2016 MCTL</p></div>
 	</section>
 </footer>
