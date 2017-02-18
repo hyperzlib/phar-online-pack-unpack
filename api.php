@@ -43,7 +43,7 @@ if(isset($_GET)){
 			$num = 0;
 			file_put_contents('progress/'.$id.'.html', strval($percent));
 			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-				$path = rtrim(str_replace(["\\", $folderPath], ["/", ""], $file), "/");
+				$path = rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/");
 				if($path{0} === "." or strpos($path, "/.") !== false){
 					continue;
 				}
