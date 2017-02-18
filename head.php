@@ -48,7 +48,7 @@
         </div>
         <nav class="navbar-collapse collapse">
 			<ul id="menu-navbar" class="nav navbar-nav">
-				<li id="nvabar-item-index"><a href=".">首页</a></li>
+				<li id="nvabar-item-index" class="active"><a href=".">首页</a></li>
                 <li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">论坛</a></li>
 				<li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">其他工具</a></li>
 			</ul>
