@@ -17,6 +17,7 @@ if(isset($_GET)){
 			$filepath = 'cache/'.$id.'.zip';
 			mkdir('cache/'.$id);
 			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),'progress'=>true));
+			file_put_contents('progress/'.$id.'.html', '0');
 			$size = ob_get_length();
 			header("Content-Length: $size");
 			header('Connection: close');
