@@ -1,10 +1,9 @@
 <?php
-set_time_limit(0);
 if(isset($_GET)){
-	if($_GET['mode']=='upload'){  //ÉÏ´«Ä£Ê½
+	if($_GET['mode']=='upload'){  //ä¸Šä¼ æ¨¡å¼
 		$id = md5($_FILES["file"]["name"].microtime());
 		file_put_contents('upload.log',json_encode(array('id'=>$id,'name'=>$_FILES["file"]["name"]))."\n",FILE_APPEND);
-		if(preg_match('/\.phar$/', $_FILES["file"]["name"])){ //½â°ü
+		if(preg_match('/\.phar$/', $_FILES["file"]["name"])){ //è§£åŒ…
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.phar');
 			$filepath = 'cache/'.$id.'.phar';
 			$phar = new Phar($filepath);
@@ -12,19 +11,21 @@ if(isset($_GET)){
 			$phar->decompressFiles();
 			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.phar$/','.zip', $_FILES["file"]["name"])),'progress'=>false));
 			@unlink($filepath);
-		} elseif(preg_match('/\.zip$/', $_FILES["file"]["name"])){//Òì²½´ò°ü
+		} elseif(preg_match('/\.zip$/', $_FILES["file"]["name"])){//å¼‚æ­¥æ‰“åŒ…
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.zip');
 			$filepath = 'cache/'.$id.'.zip';
 			mkdir('cache/'.$id);
 			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),'progress'=>true));
 			file_put_contents('progress/'.$id.'.html', '0');
+			//echo str_repeat(' ', 1024*256);
 			$size = ob_get_length();
 			header("Content-Length: $size");
 			header('Connection: close');
-			ob_end_flush();
+			//ob_end_flush();
 			ob_flush();
 			flush();
 			ignore_user_abort(true);
+			set_time_limit(0);
 			$zip = new ZipArchive;
 			$zip->open($filepath);
 			$zip->extractTo('cache/'.$id.'/');
@@ -60,11 +61,11 @@ if(isset($_GET)){
 			file_put_contents('progress/'.$id.'.html', 'true');
 		}
 	} elseif($_GET['mode']=='download'){
-		$file = 'cache/'.$_GET['id'].'.'.$_GET['type'];
+		$file = 'cache/'.preg_replace('/(\\|\/)/','',$_GET['id']).'.'.preg_replace('/(\\|\/)/','',$_GET['type']);
 		if(file_exists($file)){
-			header('Content-Type:application/zip'); //·¢ËÍÖ¸¶¨ÎÄ¼þMIMEÀàÐÍµÄÍ·ÐÅÏ¢
-			header('Content-Disposition:attachment; filename="'.$_GET['filename'].'"'); //·¢ËÍÃèÊöÎÄ¼þµÄÍ·ÐÅÏ¢£¬¸½¼þºÍÎÄ¼þÃû
-			header('Content-Length:'.filesize($file)); //·¢ËÍÖ¸¶¨ÎÄ¼þ´óÐ¡µÄÐÅÏ¢£¬µ¥Î»×Ö½Ú
+			header('Content-Type:application/zip'); //å‘é€æŒ‡å®šæ–‡ä»¶MIMEç±»åž‹çš„å¤´ä¿¡æ¯
+			header('Content-Disposition:attachment; filename="'.$_GET['filename'].'"'); //å‘é€æè¿°æ–‡ä»¶çš„å¤´ä¿¡æ¯ï¼Œé™„ä»¶å’Œæ–‡ä»¶å
+			header('Content-Length:'.filesize($file)); //å‘é€æŒ‡å®šæ–‡ä»¶å¤§å°çš„ä¿¡æ¯ï¼Œå•ä½å­—èŠ‚
 			readfile($file);
 		} else {
 			echo 'File Not Found.';
@@ -90,7 +91,7 @@ if(isset($_GET)){
 			$count++;
 		}
 		$zip->close();
-		echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','', $files[0]['filename']).'µÈ'.$count.'¸öÎÄ¼þ.zip')));
+		echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','', $files[0]['filename']).'ç­‰'.$count.'ä¸ªæ–‡ä»¶.zip')));
 	}
 } else {
 	header('Location: .');
