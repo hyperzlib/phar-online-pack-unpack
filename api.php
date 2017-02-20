@@ -1,64 +1,43 @@
 <?php
+include('function.php');
+$cfg = include('config.php');
 if(isset($_GET)){
 	if($_GET['mode']=='upload'){  //上传模式
 		$id = md5($_FILES["file"]["name"].microtime());
 		file_put_contents('upload.log',json_encode(array('id'=>$id,'name'=>$_FILES["file"]["name"]))."\n",FILE_APPEND);
 		if(preg_match('/\.phar$/', $_FILES["file"]["name"])){ //解包
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.phar');
-			$filepath = 'cache/'.$id.'.phar';
-			$phar = new Phar($filepath);
-			$phar = $phar->convertToData(Phar::ZIP);
-			$phar->decompressFiles();
+			extractphar($id);
 			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.phar$/','.zip', $_FILES["file"]["name"])),'progress'=>false));
 			@unlink($filepath);
 		} elseif(preg_match('/\.zip$/', $_FILES["file"]["name"])){//异步打包
+			//ob_start();
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.zip');
 			$filepath = 'cache/'.$id.'.zip';
 			mkdir('cache/'.$id);
 			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),'progress'=>true));
 			file_put_contents('progress/'.$id.'.html', '0');
 			//echo str_repeat(' ', 1024*256);
-			$size = ob_get_length();
-			header("Content-Length: $size");
-			header('Connection: close');
-			//ob_end_flush();
-			ob_flush();
-			flush();
-			ignore_user_abort(true);
-			set_time_limit(0);
-			$zip = new ZipArchive;
-			$zip->open($filepath);
-			$zip->extractTo('cache/'.$id.'/');
-			$zip->close();
-			@unlink($filepath);
-			$phar = new Phar('cache/'.$id.'.phar');
-			$script = '<?php if(file_exists("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php")){require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");} else {echo "This Phar file is created by MCTL Phar Convertor.";}__HALT_COMPILER();';
-			$folderPath = 'cache/'.$id;
-			$count = 0;
-			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-				$count ++;
+			if($cfg['packmode']==0){//缓冲区控制
+				$size = ob_get_length();
+				header("Content-Length: $size");
+				header('Connection: close');
+				ob_end_flush();
+				//ob_flush();
+				flush();
+				makephar($id);
+			} else {//自激活
+				$ch = curl_init();
+				//设置模目标
+				curl_setopt($ch, CURLOPT_URL, $_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"].str_replace('index.php','',$_SERVER['PHP_SELF']).'/api.php?mode=makephar&password='.md5($cfg['password'].php_uname()).'&id='.$id);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_setopt($ch, CURLOPT_TIMEOUT,2);//激活自动断开时间
+				//执行激活
+				$output = curl_exec($ch);
+				//关闭连接
+				curl_close($ch);
 			}
-			$phar->setStub($script);
-			$phar->setSignatureAlgorithm(Phar::SHA1);
-			$phar->startBuffering();
-			$percent = 0;
-			$num = 0;
-			file_put_contents('progress/'.$id.'.html', strval($percent));
-			foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-				$path = rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/");
-				if($path{0} === "." or strpos($path, "/.") !== false){
-					continue;
-				}
-				$phar->addFile($file, $path);
-				$num ++;
-				$cent = round(($num/$count)*100);
-				if($cent > $percent){
-					$percent = $cent;
-					file_put_contents('progress/'.$id.'.html', strval($percent));
-				}
-			}
-			$phar->stopBuffering();
-			file_put_contents('progress/'.$id.'.html', 'true');
 		}
 	} elseif($_GET['mode']=='download'){
 		$file = 'cache/'.preg_replace('/(\\|\/)/','',$_GET['id']).'.'.preg_replace('/(\\|\/)/','',$_GET['type']);
@@ -72,26 +51,12 @@ if(isset($_GET)){
 		}
 	} elseif($_GET['mode']=='makezip'){
 		$id = md5(microtime()+rand(0,100));
-		$zip = new ZipArchive;
-		$zip->open('cache/'.$id.'.zip',ZipArchive::CREATE);
-		$files = array();
-		foreach($_POST as $file){
-			$file = str_replace('api.php?','',$file);
-			$query = array();
-			$str1 = explode('&', $file);
-			foreach($str1 as $str2){
-				$str2 = explode('=',$str2);
-				$query[urldecode($str2[0])] = isset($str2[1])?urldecode($str2[1]):'';
-			}
-			$files[] = $query;
+		$ret = makezip($id, $_POST);
+		echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','', $ret['file']).'等'.$ret['count'].'个文件.zip')));
+	} elseif($_GET['mode']=='makephar'){
+		if($_GET['password']==md5($cfg['password'].php_uname())){
+			makephar($_GET['id']);
 		}
-		$count = 0;
-		foreach($files as $file){
-			$zip->addFile('cache/'.$file['id'].'.'.$file['type'], $file['filename']);
-			$count++;
-		}
-		$zip->close();
-		echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','', $files[0]['filename']).'等'.$count.'个文件.zip')));
 	}
 } else {
 	header('Location: .');
