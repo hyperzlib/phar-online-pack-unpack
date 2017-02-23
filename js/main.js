@@ -8,6 +8,8 @@ var filelist = new Array();
 $('#addfile').click(function() {
     if (fileid <= 100) {
         $('#lefile').click();
+	$('#lefile').show();
+	$('#addfile').hide();
     } else {
         alert('最多添加100个文件！');
     }
@@ -47,6 +49,8 @@ function addfile(id) { //写入新文件区域
 }
 
 $('#lefile').change(function() {
+	$('#lefile').hide();
+	$('#addfile').show();
 	var files = $(this)[0].files;
     for (i = 0; i < files.length; i++) {
         changefile(fileid, true, files[i]);
