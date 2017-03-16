@@ -1,5 +1,4 @@
 var progressbar = $('#progress');
-
 var filename;
 var jar;
 var fileinfo;
@@ -8,28 +7,25 @@ var filelist = new Array();
 $('#addfile').click(function() {
     if (fileid <= 100) {
         $('#lefile').click();
-	$('#lefile').show();
-	$('#addfile').hide();
     } else {
         alert('最多添加100个文件！');
     }
 });
 
-function changefile(id, mode = false, file = null) {
-    addfile(id + 1);
-    if (mode == false) {
-        filename = $('#lefile').val();
-    } else {
+function changefile(id, mode, file) {
+    if(typeof(file) != 'undefined'){
+        addfile(id + 1);
         filename = file.name;
-    }
-    if (filename != '' && filename.match(/(\.phar|\.zip)$/gi)) {
-        $('#file' + id + ' #filename').text(filename.match(/[^\/\\\\]+$/gi)[0]);
-        fileid++;
-        addfile(fileid);
-        $('#file' + id).show(1000);
-        doajax(id, mode, file);
-    } else if (!filename.match(/(\.phar|\.zip)$/gi)) {
-        alert('请选择phar或zip文件！');
+        
+        if (filename != '' && filename.match(/(\.phar|\.zip)$/g)) {
+            $('#file' + id + ' #filename').text(filename.match(/[^\/\\\\]+$/gi)[0]);
+            fileid++;
+            addfile(fileid);
+            $('#file' + id).show(1000);
+            doajax(id, mode, file);
+        } else if (!filename.match(/(\.phar|\.zip)$/g)) {
+            alert('请选择phar或zip文件！');
+        }
     }
 }
 
@@ -49,8 +45,6 @@ function addfile(id) { //写入新文件区域
 }
 
 $('#lefile').change(function() {
-	$('#lefile').hide();
-	$('#addfile').show();
 	var files = $(this)[0].files;
     for (i = 0; i < files.length; i++) {
         changefile(fileid, true, files[i]);
@@ -61,7 +55,7 @@ $('#lefile').change(function() {
     }
 });
 
-function doajax(id, mode = false, file = null) {
+function doajax(id, mode, file) {
     function onprogress(evt) {
         var loaded = evt.loaded; //已经上传大小情况  
         var tot = evt.total; //附件总大小  
