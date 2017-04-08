@@ -4,6 +4,13 @@ var jar;
 var fileinfo;
 var filelist = new Array();
 
+var dropdown = '\<div class="dropdown">\
+  \<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">\
+    Dropdown\
+    \<span class="caret"></span>\
+  \</button>\
+</div>'
+
 $('#addfile').click(function() {
     if (fileid <= 100) {
         $('#lefile').click();
@@ -97,6 +104,9 @@ function doajax(id, mode, file) {
             eval('data = ' + result);
 			if(data.progress == false){
 				$('#file' + id + ' #status').html('<a href="' + data.url + '" class="btn btn-success" target="_blank">点击下载</a>');
+				if(data.method == 'unpack'){
+					$('#file' + id + ' #status').append('&nbsp;<a href="' + data.viewurl + '" class="btn btn-primary" target="_blank">预览源码</a>');
+				}
 				filelist[id-1] = data.url;
 				$('#downloadall').show();
 			} else {
@@ -114,6 +124,9 @@ function doajax(id, mode, file) {
 								$('#file' + id + ' #progressbar').attr('aria-valuenow', '100');
 								$('#file' + id + ' #progressbar').attr('style', 'width: 100%');
 								$('#file' + id + ' #status').html('<a href="' + data.url + '" class="btn btn-success" target="_blank">点击下载</a>');
+								if(data.method == 'unpack'){
+									$('#file' + id + ' #status').append('&nbsp;<a href="' + data.viewurl + '" class="btn btn-primary" target="_blank">预览源码</a>');
+								}
 								filelist[id-1] = data.url;
 								$('#downloadall').show();
 								clearInterval(threadid);

@@ -8,14 +8,25 @@ if(isset($_GET)){
 		if(preg_match('/\.phar$/', $_FILES["file"]["name"])){ //解包
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.phar');
 			extractphar($id);
-			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.phar$/','.zip', $_FILES["file"]["name"])),'progress'=>false));
+			echo json_encode(array(
+				'id'=>$id,
+				'method'=>'unpack',
+				'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.phar$/','.zip', $_FILES["file"]["name"])),
+				'viewurl'=>'api.php?mode=view&id='.$id,
+				'progress'=>false
+			));
 			@unlink($filepath);
 		} elseif(preg_match('/\.zip$/', $_FILES["file"]["name"])){//异步打包
 			//ob_start();
 			copy($_FILES["file"]["tmp_name"], 'cache/'.$id.'.zip');
 			$filepath = 'cache/'.$id.'.zip';
 			mkdir('cache/'.$id);
-			echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),'progress'=>true));
+			echo json_encode(array(
+				'id'=>$id,
+				'method'=>'pack',
+				'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),
+				'progress'=>true
+				));
 			file_put_contents('progress/'.$id.'.html', '0');
 			//echo str_repeat(' ', 1024*256);
 			if($cfg['packmode']==0){//缓冲区控制
@@ -57,6 +68,8 @@ if(isset($_GET)){
 		if($_GET['password']==md5($cfg['password'].php_uname())){
 			makephar($_GET['id']);
 		}
+	} elseif($_GET['mode'] == 'view'){
+		include('view.php');
 	}
 } else {
 	header('Location: .');

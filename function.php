@@ -21,6 +21,20 @@ function makephar($id){
 	$folderPath = 'cache/'.$id;
 	$count = 0;
 	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
+		if(basename($file)=='config.yml'){
+			$folderPath = dirname($file);
+			break;
+		} elseif(basename($file)=='PocketMine.php'){
+		    $folderPath = dirname(dirname(dirname($file)));
+			break;
+		} else {
+		}
+		$count ++;
+	}
+	
+	$folderPath = str_replace(str_replace('\\', '/', dirname(__FILE__)), '', str_replace('\\', '/', dirname($folderPath)));
+	
+	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
 		$count ++;
 	}
 	$phar->setStub($script);
@@ -44,6 +58,7 @@ function makephar($id){
 	}
 	$phar->stopBuffering();
 	file_put_contents('progress/'.$id.'.html', 'true');
+	deldir('cache/'.$id.'/');
 }
 
 function makezip($id, $post){
@@ -67,4 +82,26 @@ function makezip($id, $post){
 	}
 	$zip->close();
 	return array('count'=>$count,'file'=>$files[0]['filename']);
+}
+
+function deldir($dir){
+	//先删除目录下的文件：
+	$dh=opendir($dir);
+	while($file=readdir($dh)){
+		if($file!="."&&$file!=".."){
+			$fullpath=$dir."/".$file;
+			if(!is_dir($fullpath)){
+				unlink($fullpath);
+			}else{
+				deldir($fullpath);
+			}
+		}
+	}
+	closedir($dh);
+	//删除当前文件夹：
+	if(rmdir($dir)){
+		return true;
+	}else{
+		return false;
+	}
 }
