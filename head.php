@@ -7,9 +7,9 @@
     <script src="js/jquery.min.js"></script>
     <meta name="toTop" content="true">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-	<!--<link rel='stylesheet' id='bootstrap-css'  href='css/a/bootstrap.min.css' type='text/css' media='all' />-->
-	<link href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
-	<link rel='stylesheet' id='fontawesome-css'  href='css/a/font-awesome.min.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='bootstrap-css'  href='css/bootstrap.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='fontawesome-css'  href='css/font-awesome.min.css' type='text/css' media='all' />
+	<link rel='stylesheet' id='zan-css'  href='css/zan.css' type='text/css' media='all' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script language="JavaScript">
         function searchShow(e){
@@ -35,7 +35,7 @@
 <header id="zan-header">
 	<!--标题-->
 	<div class="header" >
-      <h1 style="text-align:center;font-family: 'Microsoft Yahei';"><?php echo $page['title'];?></h1>
+      <h1 style="text-align:center"><?php echo $page['title'];?></h1>
     </div>
     <!-- 导航 -->
     <div class="navbar navbar-inverse">
@@ -48,7 +48,7 @@
         </div>
         <nav class="navbar-collapse collapse">
 			<ul id="menu-navbar" class="nav navbar-nav">
-				<li id="nvabar-item-index" class="active"><a href=".">首页</a></li>
+				<li id="nvabar-item-index"><a href=".">首页</a></li>
                 <li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">论坛</a></li>
 				<li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">其他工具</a></li>
 			</ul>

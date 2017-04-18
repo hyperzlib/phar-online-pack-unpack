@@ -82,9 +82,16 @@ function doajax(id, mode, file) {
         formdata.append("file", file);
     }
 
+	var upurl = "";
+	if($('#high-speed').attr('checked') == "checked"){
+		upurl = "api.php?mode=upload&highspeed";
+	} else {
+		upurl = "api.php?mode=upload";
+	}
+	
     var request = $.ajax({
         type: "POST",
-        url: "api.php?mode=upload",
+        url: upurl,
         data: formdata, //这里上传的数据使用了formData 对象
         processData: false, //必须false才会自动加上正确的Content-Type
         contentType: false,
@@ -103,9 +110,18 @@ function doajax(id, mode, file) {
             console.log(result);
             eval('data = ' + result);
 			if(data.progress == false){
-				$('#file' + id + ' #status').html('<a href="' + data.url + '" class="btn btn-success" target="_blank">点击下载</a>');
+				$('#file' + id + ' #status').html('<div class="btn-group">\
+				  <button type="button" class="btn btn-default" onclick="window.location.href=\'' + data.url + '\'">下载</button>\
+				  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\
+					<span class="caret"></span>\
+					<span class="sr-only">Toggle Dropdown</span>\
+				  </button>\
+				  <ul class="dropdown-menu">\
+					\
+				  </ul>\
+				</div>');
 				if(data.method == 'unpack'){
-					$('#file' + id + ' #status').append('&nbsp;<a href="' + data.viewurl + '" class="btn btn-primary" target="_blank">预览源码</a>');
+					$('#file' + id + ' #status .btn-group .dropdown-menu').append('<li><a href="' + data.viewurl + '" target="_blank">预览源码</a></li>');
 				}
 				filelist[id-1] = data.url;
 				$('#downloadall').show();
@@ -123,9 +139,18 @@ function doajax(id, mode, file) {
 							} else {
 								$('#file' + id + ' #progressbar').attr('aria-valuenow', '100');
 								$('#file' + id + ' #progressbar').attr('style', 'width: 100%');
-								$('#file' + id + ' #status').html('<a href="' + data.url + '" class="btn btn-success" target="_blank">点击下载</a>');
+								$('#file' + id + ' #status').html('<div class="btn-group">\
+								  <button type="button" class="btn btn-default" onclick="window.location.href=\'' + data.url + '\'">下载</button>\
+								  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\
+									<span class="caret"></span>\
+									<span class="sr-only">Toggle Dropdown</span>\
+								  </button>\
+								  <ul class="dropdown-menu">\
+									\
+								  </ul>\
+								</div>');
 								if(data.method == 'unpack'){
-									$('#file' + id + ' #status').append('&nbsp;<a href="' + data.viewurl + '" class="btn btn-primary" target="_blank">预览源码</a>');
+									$('#file' + id + ' #status .btn-group .dropdown-menu').append('<li><a href="' + data.viewurl + '" target="_blank">预览源码</a></li>');
 								}
 								filelist[id-1] = data.url;
 								$('#downloadall').show();

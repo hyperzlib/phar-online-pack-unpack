@@ -36,11 +36,15 @@ if(isset($_GET)){
 				ob_end_flush();
 				//ob_flush();
 				flush();
-				makephar($id);
+				makephar($id, isset($_GET['highspeed']));
 			} else {//自激活
 				$ch = curl_init();
 				//设置模目标
-				curl_setopt($ch, CURLOPT_URL, $_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"].str_replace('index.php','',$_SERVER['PHP_SELF']).'/api.php?mode=makephar&password='.md5($cfg['password'].php_uname()).'&id='.$id);
+				if(isset($_GET['highspeed'])){
+					curl_setopt($ch, CURLOPT_URL, $_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"].str_replace('index.php','',$_SERVER['PHP_SELF']).'/api.php?mode=makephar&password='.md5($cfg['password'].php_uname()).'&id='.$id.'&highspeed');
+				} else {
+					curl_setopt($ch, CURLOPT_URL, $_SERVER['HTTP_HOST'].':'.$_SERVER["SERVER_PORT"].str_replace('index.php','',$_SERVER['PHP_SELF']).'/api.php?mode=makephar&password='.md5($cfg['password'].php_uname()).'&id='.$id);
+				}
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 				curl_setopt($ch, CURLOPT_HEADER, 0);
 				curl_setopt($ch, CURLOPT_TIMEOUT,2);//激活自动断开时间
@@ -66,7 +70,7 @@ if(isset($_GET)){
 		echo json_encode(array('id'=>$id,'url'=>'api.php?mode=download&type=zip&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','', $ret['file']).'等'.$ret['count'].'个文件.zip')));
 	} elseif($_GET['mode']=='makephar'){
 		if($_GET['password']==md5($cfg['password'].php_uname())){
-			makephar($_GET['id']);
+			makephar($_GET['id'], isset($_GET['highspeed']));
 		}
 	} elseif($_GET['mode'] == 'view'){
 		include('view.php');

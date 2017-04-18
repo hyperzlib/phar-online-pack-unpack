@@ -7,58 +7,66 @@ function extractphar($id){
 	return true;
 }
 
-function makephar($id){
+function makephar($id, $highspeed = false){
 	$filepath = 'cache/'.$id.'.zip';
 	ignore_user_abort(true);
 	set_time_limit(0);
-	$zip = new ZipArchive;
-	$zip->open($filepath);
-	$zip->extractTo('cache/'.$id.'/');
-	$zip->close();
-	@unlink($filepath);
-	$phar = new Phar('cache/'.$id.'.phar');
-	$script = '<?php if(file_exists("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php")){require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");} else {echo "This Phar file is created by MCTL Phar Convertor.";}__HALT_COMPILER();';
-	$folderPath = 'cache/'.$id;
-	$count = 0;
-	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-		if(basename($file)=='config.yml'){
-			$folderPath = dirname($file);
-			break;
-		} elseif(basename($file)=='PocketMine.php'){
-		    $folderPath = dirname(dirname(dirname($file)));
-			break;
-		} else {
+	if(!$highspeed){
+		$zip = new ZipArchive;
+		$zip->open($filepath);
+		$zip->extractTo('cache/'.$id.'/');
+		$zip->close();
+		@unlink($filepath);
+		$phar = new Phar('cache/'.$id.'.phar');
+		$script = '<?php if(file_exists("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php")){require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");} else {echo "This Phar file is created by MCTL Phar Convertor.";}__HALT_COMPILER();';
+		$folderPath = 'cache/'.$id;
+		$count = 0;
+		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
+			if(basename($file)=='config.yml'){
+				$folderPath = dirname($file);
+				break;
+			} elseif(basename($file)=='PocketMine.php'){
+				$folderPath = dirname(dirname($file));
+				break;
+			} else {
+			}
+			$count ++;
 		}
-		$count ++;
-	}
-	
-	$folderPath = str_replace(str_replace('\\', '/', dirname(__FILE__)), '', str_replace('\\', '/', dirname($folderPath)));
-	
-	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-		$count ++;
-	}
-	$phar->setStub($script);
-	$phar->setSignatureAlgorithm(Phar::SHA1);
-	$phar->startBuffering();
-	$percent = 0;
-	$num = 0;
-	file_put_contents('progress/'.$id.'.html', strval($percent));
-	foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-		$path = rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/");
-		if($path{0} === "." or strpos($path, "/.") !== false){
-			continue;
+		
+		$folderPath = str_replace(str_replace('\\', '/', dirname(__FILE__)), '', str_replace('\\', '/', dirname($folderPath)));
+		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
+			$count ++;
 		}
-		$phar->addFile($file, $path);
-		$num ++;
-		$cent = round(($num/$count)*100);
-		if($cent > $percent){
-			$percent = $cent;
-			file_put_contents('progress/'.$id.'.html', strval($percent));
+		$phar->setStub($script);
+		$phar->setSignatureAlgorithm(Phar::SHA1);
+		$phar->startBuffering();
+		$percent = 0;
+		$num = 0;
+		file_put_contents('progress/'.$id.'.html', strval($percent));
+		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
+			$path = rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/");
+			if($path{0} === "." or strpos($path, "/.") !== false){
+				continue;
+			}
+			$phar->addFile($file, $path);
+			$num ++;
+			$cent = round(($num/$count)*100);
+			if($cent > $percent){
+				$percent = $cent;
+				file_put_contents('progress/'.$id.'.html', strval($percent));
+			}
 		}
+		$phar->stopBuffering();
+		file_put_contents('progress/'.$id.'.html', 'true');
+		deldir('cache/'.$id.'/');
+	} else {
+		$script = '<?php if(file_exists("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php")){require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");} else {echo "This Phar file is created by MCTL Phar Convertor.";}__HALT_COMPILER();';
+		$zipphar = new PharData($filepath);
+		$phar =  $zipphar->convertToExecutable(Phar::PHAR);
+		$phar->setStub($script);
+		$phar->setSignatureAlgorithm(Phar::SHA1);
+		file_put_contents('progress/'.$id.'.html', 'true');
 	}
-	$phar->stopBuffering();
-	file_put_contents('progress/'.$id.'.html', 'true');
-	deldir('cache/'.$id.'/');
 }
 
 function makezip($id, $post){

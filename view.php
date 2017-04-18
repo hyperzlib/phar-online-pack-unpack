@@ -57,7 +57,7 @@ foreach($files as $file){
 	include('head.php');
 	?>
 <div class="panel panel-primary">
-  <div class="panel-heading"><?php echo basename($dir);?></div>
+  <div class="panel-heading"><?php echo basename($dir);?> | <a class="btn btn-default"></div>
   <div class="panel-body">
   <ul class="list-group">
   <ol class="breadcrumb">
