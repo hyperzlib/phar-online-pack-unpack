@@ -1,4 +1,5 @@
 <?php
+chdir(__DIR__);
 include('function.php');
 $cfg = include('config.php');
 if(isset($_GET)){
@@ -29,7 +30,9 @@ if(isset($_GET)){
 				));
 			file_put_contents('progress/'.$id.'.html', '0');
 			//echo str_repeat(' ', 1024*256);
-			if($cfg['packmode']==0){//缓冲区控制
+			if(isset($_GET['wait'])){//等待模式
+				makephar($id, isset($_GET['highspeed']));
+			} elseif($cfg['packmode']==0){//缓冲区控制
 				$size = ob_get_length();
 				header("Content-Length: $size");
 				header('Connection: close');
@@ -74,6 +77,21 @@ if(isset($_GET)){
 		}
 	} elseif($_GET['mode'] == 'view'){
 		include('view.php');
+	} elseif($_GET['mode'] == 'cron'){
+		$filecount = 0;
+		$dircount = 0;
+		foreach(glob('cache/*') as $file){
+			if(filemtime($file) < time()-3600){
+				if(is_dir($file)){
+					deldir($file);
+					$dircount ++;
+				} else {
+					@unlink($file);
+					$filecount ++;
+				}
+			}
+		}
+		echo 'Remove '.$filecount.' out of date files and ' . $dircount . ' dirs';
 	}
 } else {
 	header('Location: .');
