@@ -17,7 +17,7 @@ var fileid=1;
 		<a class="btn btn-primary" id="downloadall" style="display: none;"><i class="fa fa-download"></i> | 全部下载</a><label id="downloadtext"></label>
 	</div>
 	<br />
-	&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" checked="false" name="high-speed" id="high-speed"></input><label for="high-speed">高速打包模式（不稳定）</label>
+	<!--&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="high-speed" id="high-speed"></input><label for="high-speed">高速打包模式（不稳定）</label>-->
 	<br />
 	<br />
 </form>
