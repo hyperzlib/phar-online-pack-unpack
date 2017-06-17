@@ -81,7 +81,7 @@ if(isset($_GET)){
 		$filecount = 0;
 		$dircount = 0;
 		foreach(glob('cache/*') as $file){
-			if(filemtime($file) < time()-3600){
+			if(filemtime($file) < time() - 600){
 				if(is_dir($file)){
 					deldir($file);
 					$dircount ++;

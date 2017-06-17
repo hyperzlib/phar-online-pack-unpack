@@ -1,5 +1,7 @@
 <?php
-
+if(!file_exists('.time') || intval(file_get_contents('.time')) <= time() - 120){
+	include('autoclean.php');
+}
 $page = array();
 $page['title'] = '打包/解包Phar';
 include('head.php');
@@ -16,6 +18,7 @@ var fileid=1;
 		<label>或拖动文件到此处上传</label>
 		<a class="btn btn-primary" id="downloadall" style="display: none;"><i class="fa fa-download"></i> | 全部下载</a><label id="downloadtext"></label>
 	</div>
+	&nbsp;&nbsp;&nbsp;&nbsp;<small>文件将仅在服务器上保留10分钟，请尽快下载</small>
 	<br />
 	<br />
 </form>
