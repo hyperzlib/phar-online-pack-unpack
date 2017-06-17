@@ -2,8 +2,8 @@
 function extractphar($id){
 	$filepath = 'cache/'.$id.'.phar';
 	$phar = new Phar($filepath);
-	$phar = $phar->convertToData(Phar::ZIP);
 	$phar->decompressFiles();
+	$phar = $phar->convertToData(Phar::ZIP);
 	return true;
 }
 
@@ -22,13 +22,17 @@ function makephar($id, $highspeed = false){
 		$folderPath = 'cache/'.$id;
 		$count = 0;
 		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-			if(basename($file)=='config.yml'){
+			$file = str_replace('\\', '/', $file);
+			$filename = basename($file);
+			if($filename == '..' && $filename == '.'){
+				continue;
+			}
+			if($filename=='plugin.yml'){
 				$folderPath = dirname($file);
 				break;
-			} elseif(basename($file)=='PocketMine.php'){
+			} elseif($filename=='PocketMine.php'){
 				$folderPath = dirname(dirname($file));
 				break;
-			} else {
 			}
 			$count ++;
 		}
@@ -44,7 +48,7 @@ function makephar($id, $highspeed = false){
 		$num = 0;
 		file_put_contents('progress/'.$id.'.html', strval($percent));
 		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folderPath)) as $file){
-			$path = rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/");
+			$path = ltrim(rtrim(str_replace(array("\\", $folderPath), array("/", ""), $file), "/"), $id.'/');
 			if($path{0} === "." or strpos($path, "/.") !== false){
 				continue;
 			}
@@ -57,14 +61,17 @@ function makephar($id, $highspeed = false){
 			}
 		}
 		$phar->stopBuffering();
+		$phar->compressFiles(Phar::GZ);
 		file_put_contents('progress/'.$id.'.html', 'true');
 		deldir('cache/'.$id.'/');
 	} else {
 		$script = '<?php if(file_exists("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php")){require("phar://" . __FILE__ . "/src/pocketmine/PocketMine.php");} else {echo "This Phar file is created by MCTL Phar Convertor.";}__HALT_COMPILER();';
 		$zipphar = new PharData($filepath);
-		$phar =  $zipphar->convertToExecutable(Phar::PHAR);
+		$tarphar = $zipphar->convertToData(Phar::TAR);
+		$phar =  $tarphar->convertToExecutable(Phar::PHAR);
 		$phar->setStub($script);
 		$phar->setSignatureAlgorithm(Phar::SHA1);
+		$phar->compressFiles(Phar::GZ);
 		file_put_contents('progress/'.$id.'.html', 'true');
 	}
 }
