@@ -28,7 +28,7 @@ if(isset($_GET)){
 				'url'=>'api.php?mode=download&type=phar&id='.$id.'&filename='.urlencode(preg_replace('/\.zip$/','.phar', $_FILES["file"]["name"])),
 				'progress'=>true
 				));
-			file_put_contents('progress/'.$id.'.html', '0');
+			file_put_contents('progress/'.$id.'.json', json_encode(['p' => '0', 't' => time()]));
 			//echo str_repeat(' ', 1024*256);
 			if(isset($_GET['wait'])){//等待模式
 				makephar($id, isset($_GET['highspeed']));
@@ -81,6 +81,9 @@ if(isset($_GET)){
 		$filecount = 0;
 		$dircount = 0;
 		foreach(glob('cache/*') as $file){
+			if(basename($file) == '.htaccess'){
+				continue;
+			}
 			if(filemtime($file) < time() - 600){
 				if(is_dir($file)){
 					deldir($file);
@@ -92,6 +95,21 @@ if(isset($_GET)){
 			}
 		}
 		echo 'Remove '.$filecount.' out of date files and ' . $dircount . ' dirs';
+	} elseif($_GET['mode'] == 'progress'){
+		$id = str_replace(['\\', '/'], ['', ''], $_GET['id']);
+		if(file_exists('progress/'.$id.'.json')){
+			$data = file_get_contents('progress/'.$id.'.json');
+			$data = json_decode($data, true);
+			if($data['t'] < (time() - 30)){
+				echo 'false';
+				@unlink('progress/'.$id.'.json');
+			} elseif($data['p'] == 'true'){
+				echo 'true';
+				@unlink('progress/'.$id.'.json');
+			} else {
+				echo $data['p'];
+			}
+		}
 	}
 } else {
 	header('Location: .');

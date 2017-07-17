@@ -1,33 +1,30 @@
-
+</div>
+<div class="well bs-component">
 <!-- UY BEGIN -->
 <div id="uyan_frame"></div>
 <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=2124778"></script>
 <!-- UY END -->
 </div>
-<footer id="zan-footer">
-<section class="footer-space">
-    <div class="footer-space-line"></div>
-</section>
-	<section class="zan-copyright">
-		<div id="footer"><p>Copyright &copy; 2015-2016 MCTL</p></div>
-	</section>
+</div>
+</div>
+<footer>
+  <div class="container">
+	<div class="row">
+	  <div class="col-xs-12">
+		<div style="text-align:center;">
+			<h5 class="footer-title">Copyright &copy; 2015-<?php echo date('Y'); ?> MCTL | Phar在线打包</h5>
+		</div>
+	  </div>
+	</div>
+  </div>
 </footer>
-<script type="text/javascript" src="js/bootstrap-zan.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/zan.js"></script>
+<script type="text/javascript" src="dist/js/bootstrap.min.js"></script>
+<script src="dist/js/material.js"></script>
+<script src="dist/js/ripples.min.js"></script>
 <script>
-    $(function(){
-        $("#aFloatTools_Show").click(function(){
-            $('#divFloatToolsView').animate({width:'show',opacity:'show'},100,function(){$('#divFloatToolsView').show();});
-            $('#aFloatTools_Show').hide();
-            $('#aFloatTools_Hide').show();              
-        });
-        $("#aFloatTools_Hide").click(function(){
-            $('#divFloatToolsView').animate({width:'hide', opacity:'hide'},100,function(){$('#divFloatToolsView').hide();});
-            $('#aFloatTools_Show').show();
-            $('#aFloatTools_Hide').hide();  
-        });
-    });
+$(function () {
+	$.material.init();
+});
 </script>
 </body>
 </html>

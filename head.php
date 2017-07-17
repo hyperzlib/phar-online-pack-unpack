@@ -1,15 +1,20 @@
+<?php
+date_default_timezone_set('PRC');
+?>
 <!DOCTYPE html>
 <html><head lang="zh"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>MC技术联盟——<?php echo $page['title'];?></title>
 	<meta name="keywords" content="mc技术联盟,工具箱">
 	<meta name="description" content="在这里有许多有用的小工具" />
-    <!--<link rel="stylesheet" href="/Public/css/style.css"/>-->
-    <script src="js/jquery.min.js"></script>
+    <script src="dist/js/jquery.min.js"></script>
     <meta name="toTop" content="true">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-	<link rel='stylesheet' id='bootstrap-css'  href='css/bootstrap.css' type='text/css' media='all' />
-	<link rel='stylesheet' id='fontawesome-css'  href='css/font-awesome.min.css' type='text/css' media='all' />
-	<link rel='stylesheet' id='zan-css'  href='css/zan.css' type='text/css' media='all' />
+	<!-- Loading Bootstrap -->
+    <link href="dist/css/bootstrap.css" rel="stylesheet">
+	<link href="dist/css/bootstrap-material-design.css" rel="stylesheet">
+	<link href="dist/css/ripples.min.css" rel="stylesheet">
+	
+	<link rel="stylesheet" href="dist/css/font-awesome.min.css" type="text/css" media="all" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script language="JavaScript">
         function searchShow(e){
@@ -31,31 +36,26 @@
 
 
 </head>
-<body class="archive tag tag-34 tag-34">
-<header id="zan-header">
-	<!--标题-->
-	<div class="header" >
-      <h1 style="text-align:center"><?php echo $page['title'];?></h1>
-    </div>
-    <!-- 导航 -->
-    <div class="navbar navbar-inverse">
-      <div class="container clearfix">
-        <div class="navbar-header">
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">下拉框</span>
-            <span class="fa fa-reorder fa-lg"></span>
-          </button>
-        </div>
-        <nav class="navbar-collapse collapse">
-			<ul id="menu-navbar" class="nav navbar-nav">
-				<li id="nvabar-item-index"><a href=".">首页</a></li>
-                <li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">论坛</a></li>
-				<li id="nvabar-item-index"><a href="http://mcleague.xicp.net/">其他工具</a></li>
-			</ul>
-		</nav>
-      </div>
-    </div>
-    <!-- 导航结束 -->
+<body style="padding-top: 80px;">
 
-</header>
-<div id="main_page" class="container">
+<div class="navbar navbar-default navbar-fixed-top">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="javascript:void(0)">Phar</a>
+		</div>
+		<div class="navbar-collapse collapse navbar-responsive-collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="index.php">首页</a></li>
+				<li><a href="http://mcleague.xicp.net">论坛</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div class="container-fluid">
+<div class="col-xs-12" id="main_page">
+<div class="well bs-component" id="dropbox">
